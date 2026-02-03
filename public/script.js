@@ -140,53 +140,116 @@
 
     /**
      * Form Handling
-     * Client-side validation and success state
-     * Ready for Netlify Forms (forms work automatically when deployed to Netlify)
+     * Submits to Express backend API
      */
     function initForms() {
         const checklistForm = document.getElementById('checklist-form');
         const contactForm = document.getElementById('contact-form');
 
         if (checklistForm) {
-            initForm(checklistForm, 'checklist-success');
+            initChecklistForm(checklistForm);
         }
 
         if (contactForm) {
-            initForm(contactForm, 'contact-success');
+            initContactForm(contactForm);
         }
     }
 
-    function initForm(form, successId) {
-        const successElement = document.getElementById(successId);
+    function initContactForm(form) {
+        const successElement = document.getElementById('contact-success');
+        const submitBtn = form.querySelector('button[type="submit"]');
 
-        form.addEventListener('submit', function(e) {
-            // Validate form
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             if (!form.checkValidity()) {
                 return;
             }
 
-            // For demo purposes (local testing), show success message
-            // On Netlify, the form will actually submit and show Netlify's success page
-            // unless you handle it with JavaScript
+            // Disable button and show loading state
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
 
-            // Check if we're on Netlify (production) or local
-            const isNetlify = window.location.hostname !== 'localhost' &&
-                              window.location.hostname !== '127.0.0.1' &&
-                              !window.location.hostname.includes('.local');
+            const formData = {
+                name: form.querySelector('#contact-name').value,
+                email: form.querySelector('#contact-email').value,
+                firm: form.querySelector('#contact-firm').value,
+                message: form.querySelector('#contact-message').value
+            };
 
-            if (!isNetlify) {
-                // Local demo behavior
-                e.preventDefault();
-                showFormSuccess(form, successElement);
-            } else {
-                // On Netlify, let the form submit normally
-                // Or use AJAX to submit and show custom success
-                e.preventDefault();
-                submitFormToNetlify(form, successElement);
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showFormSuccess(form, successElement);
+                } else {
+                    throw new Error(result.error || 'Failed to send message');
+                }
+            } catch (error) {
+                console.error('Form error:', error);
+                alert('There was an error sending your message. Please try emailing directly at gadiguy@gmail.com');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
 
-        // Real-time validation feedback
+        // Real-time validation
+        setupValidation(form);
+    }
+
+    function initChecklistForm(form) {
+        const successElement = document.getElementById('checklist-success');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!form.checkValidity()) {
+                return;
+            }
+
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            const formData = {
+                email: form.querySelector('#checklist-email').value,
+                role: form.querySelector('#checklist-role').value
+            };
+
+            try {
+                const response = await fetch('/api/checklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showFormSuccess(form, successElement);
+                } else {
+                    throw new Error(result.error || 'Failed to submit');
+                }
+            } catch (error) {
+                console.error('Form error:', error);
+                alert('There was an error. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        setupValidation(form);
+    }
+
+    function setupValidation(form) {
         const inputs = form.querySelectorAll('input, textarea, select');
         inputs.forEach(function(input) {
             input.addEventListener('blur', function() {
@@ -215,32 +278,6 @@
         form.style.display = 'none';
         successElement.classList.remove('hidden');
         successElement.focus();
-    }
-
-    /**
-     * Submit form to Netlify using fetch
-     * This allows us to show a custom success message instead of redirecting
-     */
-    function submitFormToNetlify(form, successElement) {
-        const formData = new FormData(form);
-
-        fetch('/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(formData).toString()
-        })
-        .then(function(response) {
-            if (response.ok) {
-                showFormSuccess(form, successElement);
-            } else {
-                throw new Error('Form submission failed');
-            }
-        })
-        .catch(function(error) {
-            console.error('Form error:', error);
-            // Show a generic error - in production you might want a better UX
-            alert('There was an error submitting the form. Please try again or email directly.');
-        });
     }
 
     /**

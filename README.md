@@ -1,200 +1,152 @@
 # Technical Due Diligence Website
 
-A production-ready static website for a solo consultant selling Technical Due Diligence services to VC funds, PE firms, and institutional investors.
+A website for Gadi Guy's Technical Due Diligence consulting services for VC funds, PE firms, and institutional investors.
 
 ## Quick Start
 
-### Local Preview
-
-1. **Simple method** - Open `index.html` directly in your browser
-
-2. **Local server method** (recommended for testing forms):
-   ```bash
-   # Using Python 3
-   python -m http.server 8000
-
-   # Using Node.js (if you have npx)
-   npx serve
-
-   # Using PHP
-   php -S localhost:8000
-   ```
-   Then open `http://localhost:8000` in your browser.
-
-## Deployment on Netlify
-
-### Method 1: Drag and Drop (Quickest)
-
-1. Go to [app.netlify.com](https://app.netlify.com)
-2. Sign up or log in
-3. Drag the entire project folder onto the deploy area
-4. Your site is live!
-
-### Method 2: Git Integration (Recommended for ongoing updates)
-
-1. Push this folder to a GitHub/GitLab/Bitbucket repository
-2. Go to [app.netlify.com](https://app.netlify.com)
-3. Click "Add new site" → "Import an existing project"
-4. Connect your repository
-5. Deploy settings:
-   - Build command: (leave empty)
-   - Publish directory: `.` or `/`
-6. Click "Deploy"
-
-## Enabling Netlify Forms
-
-Forms are pre-configured to work with Netlify automatically. After deploying:
-
-1. Go to your site dashboard on Netlify
-2. Navigate to **Forms** in the sidebar
-3. You should see two forms listed:
-   - `checklist-download` (lead magnet form)
-   - `contact` (contact form)
-
-### Setting Up Notifications
-
-1. In Netlify dashboard, go to **Site settings** → **Forms** → **Form notifications**
-2. Add an **Email notification** for each form
-3. Configure the recipient email address
-
-### Delivering the Checklist (Lead Magnet)
-
-Option A: **Manual delivery**
-- Check Netlify Forms submissions daily
-- Send checklist PDF via email manually
-
-Option B: **Automated delivery with Zapier**
-1. Create a Zapier account
-2. Set up a Zap: Netlify Form Submission → Send Email
-3. Attach your checklist PDF to the automated email
-4. Filter by form name = "checklist-download"
-
-Option C: **Automated delivery with Make (Integromat)**
-- Similar workflow to Zapier
-
-## Customization Checklist
-
-### Required Changes (Before Launch)
-
-Edit `index.html` and update these placeholders:
-
-| Placeholder | Location | What to add |
-|-------------|----------|-------------|
-| `TechDD` | Header logo | Your name or brand |
-| `Your Name - Technical Due Diligence` | JSON-LD schema | Your actual name |
-| `https://your-domain.com` | Meta tags, JSON-LD | Your domain |
-| `https://linkedin.com/in/your-profile` | JSON-LD, footer | Your LinkedIn URL |
-| `your@email.com` | Contact section, footer | Your email address |
-| `#` (calendar link) | Hero CTA, contact section | Your Calendly/Cal.com link |
-| `Your Name` | Footer | Your name |
-
-### Search & Replace Commands
+### 1. Install Dependencies
 
 ```bash
-# In your text editor, use Find & Replace:
-# - "your@email.com" → "actual@email.com"
-# - "https://linkedin.com/in/your-profile" → "https://linkedin.com/in/actual"
-# - "https://your-domain.com" → "https://youractualsite.com"
-# - "Your Name" → "John Smith" (or your name)
+npm install
 ```
 
-### Adding Your Calendar Link
+### 2. Configure Email
 
-1. Create a scheduling link on [Calendly](https://calendly.com) or [Cal.com](https://cal.com)
-2. Search for `calendar-link` in `index.html`
-3. Replace `href="#"` with your actual booking URL
+Copy the example environment file and add your Gmail App Password:
 
-### Adding Price Ranges
-
-In the Pricing section (`index.html`), update each package:
-
-```html
-<!-- Change this: -->
-<span class="price-amount">Fixed</span>
-<span class="price-note">Contact for quote</span>
-
-<!-- To something like: -->
-<span class="price-amount">$5,000 - $8,000</span>
-<span class="price-note">Scope dependent</span>
+```bash
+cp .env.example .env
 ```
 
-### Customizing Case Studies
+Edit `.env` and add your Gmail App Password:
+- Go to https://myaccount.google.com/apppasswords
+- Create an App Password for "Mail"
+- Paste the 16-character password in `.env`
 
-**Important guidelines to avoid confidentiality issues:**
+### 3. Run the Server
 
-1. **Never name clients** without explicit written permission
-2. **Use generic descriptors**: "Series B SaaS" not "Acme Corp"
-3. **Focus on findings and impact**, not identifying details
-4. **Change specific numbers** if they could identify a deal
-5. **Have legal review** any case study before publishing
-
-Example safe format:
-```html
-<span class="case-study-tag">Series A Fintech</span>
-<h3>Prevented $X Valuation Adjustment</h3>
-<p>Assessment revealed [generic finding]. [Generic outcome].</p>
+```bash
+npm start
 ```
 
-### Adding Sample Deliverables
+Open http://localhost:3000 in your browser.
 
-1. Create redacted/sample PDFs of:
-   - Executive memo template
-   - Risk scoring matrix
-   - Tech DD checklist (for lead magnet)
+## Email Setup (Gmail)
 
-2. Upload to Netlify or a file hosting service
-3. Update the proof section links in `index.html`
+The contact form sends emails via Gmail. To set this up:
+
+1. **Enable 2-Factor Authentication** on your Google account
+2. **Create an App Password:**
+   - Go to https://myaccount.google.com/apppasswords
+   - Select "Mail" and "Other (Custom name)"
+   - Name it "DD Site"
+   - Copy the 16-character password
+3. **Add to .env file:**
+   ```
+   EMAIL_USER=gadiguy@gmail.com
+   EMAIL_PASS=xxxx-xxxx-xxxx-xxxx
+   ```
+
+## Deployment
+
+### Option 1: Railway / Render / Fly.io (Recommended)
+
+These platforms support Node.js apps with environment variables:
+
+1. Push code to GitHub
+2. Connect repository to Railway/Render/Fly.io
+3. Set environment variables: `EMAIL_USER` and `EMAIL_PASS`
+4. Deploy
+
+### Option 2: VPS (DigitalOcean, Linode, etc.)
+
+```bash
+# On your server
+git clone your-repo
+cd dd-site
+npm install
+cp .env.example .env
+# Edit .env with your credentials
+npm start
+```
+
+Use PM2 for process management:
+```bash
+npm install -g pm2
+pm2 start server.js --name dd-site
+pm2 save
+pm2 startup
+```
+
+### Option 3: Heroku
+
+```bash
+heroku create your-app-name
+heroku config:set EMAIL_USER=gadiguy@gmail.com
+heroku config:set EMAIL_PASS=your-app-password
+git push heroku main
+```
 
 ## File Structure
 
 ```
 dd-site/
-├── index.html      # Main HTML (all content and structure)
-├── styles.css      # All styles (responsive, dark mode)
-├── script.js       # JavaScript (nav, forms, FAQ accordion)
+├── index.html      # Main HTML page
+├── styles.css      # All styles
+├── script.js       # Frontend JavaScript
+├── server.js       # Express backend
+├── package.json    # Node.js dependencies
+├── .env.example    # Environment template
+├── .env            # Your credentials (don't commit!)
+├── .gitignore      # Git ignore rules
+├── portrait.png    # Profile image
 └── README.md       # This file
 ```
 
 ## Features
 
-- **Mobile-first responsive design** - Works on all devices
-- **Dark mode support** - Automatic via `prefers-color-scheme`
-- **Accessible** - Proper heading structure, ARIA labels, keyboard navigation
-- **SEO ready** - Meta tags, OpenGraph, JSON-LD structured data
-- **Fast** - No frameworks, minimal dependencies, system fonts
-- **Form ready** - Pre-configured for Netlify Forms
+- **Contact form** sends emails directly to gadiguy@gmail.com
+- **Checklist form** notifies you of new download requests
+- Mobile-responsive design
+- Dark mode support
+- Accessible (keyboard navigation, screen readers)
 
-## Browser Support
+## Customization
 
-- Chrome/Edge (last 2 versions)
-- Firefox (last 2 versions)
-- Safari (last 2 versions)
-- Mobile browsers (iOS Safari, Chrome Android)
+### Update Contact Email
+
+In `server.js`, change the `to:` field in both `mailOptions` objects:
+```javascript
+to: 'your-new-email@example.com',
+```
+
+### Update Social Links
+
+In `index.html`, find the `social-links` div in the header and update the URLs.
+
+### Update Pricing
+
+In `index.html`, search for `pricing-grid` and edit the prices.
 
 ## Troubleshooting
 
-### Forms not appearing in Netlify dashboard
+### "Email credentials not configured" warning
 
-- Make sure the site has been deployed at least once
-- The forms are registered on first deploy
-- Check that `data-netlify="true"` is present on form tags
+Create a `.env` file with your Gmail App Password. See "Email Setup" above.
 
-### Styles not loading locally
+### Form submissions not sending
 
-- Make sure `styles.css` is in the same folder as `index.html`
-- Check browser console for 404 errors
-- Try using a local server instead of opening file directly
+1. Check the server console for errors
+2. Verify your App Password is correct
+3. Make sure 2FA is enabled on your Google account
+4. Check if "Less secure app access" needs to be disabled (App Passwords are more secure)
 
-### Dark mode not working
+### Server won't start
 
-- Ensure your OS/browser is set to dark mode
-- Check that your browser supports `prefers-color-scheme`
-- Safari and Firefox fully support this; older browsers may not
+```bash
+# Check for port conflicts
+lsof -i :3000
 
-## License
-
-This template is provided for your use. Customize freely for your business.
-
----
-
-Built for Technical Due Diligence consultants serving the investment community.
+# Try a different port
+PORT=3001 npm start
+```
