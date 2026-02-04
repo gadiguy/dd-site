@@ -23,13 +23,13 @@ const transporter = nodemailer.createTransport({
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
-    const { name, email, firm, message } = req.body;
+    const { name, email, linkedin, firm, message } = req.body;
 
     // Validate required fields
-    if (!name || !email || !message) {
+    if (!name || !email || !linkedin || !message) {
         return res.status(400).json({
             success: false,
-            error: 'Name, email, and message are required'
+            error: 'Name, email, LinkedIn profile, and message are required'
         });
     }
 
@@ -44,6 +44,7 @@ New contact form submission:
 
 Name: ${name}
 Email: ${email}
+LinkedIn: ${linkedin}
 Firm: ${firm || 'Not provided'}
 
 Message:
@@ -62,6 +63,10 @@ Sent from your Technical Due Diligence website
     <tr>
         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
         <td style="padding: 8px; border: 1px solid #ddd;"><a href="mailto:${email}">${email}</a></td>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">LinkedIn</td>
+        <td style="padding: 8px; border: 1px solid #ddd;"><a href="${linkedin}">${linkedin}</a></td>
     </tr>
     <tr>
         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Firm</td>
@@ -90,12 +95,12 @@ Sent from your Technical Due Diligence website
 
 // Checklist form endpoint
 app.post('/api/checklist', async (req, res) => {
-    const { email, role } = req.body;
+    const { email, linkedin, role } = req.body;
 
-    if (!email) {
+    if (!email || !linkedin) {
         return res.status(400).json({
             success: false,
-            error: 'Email is required'
+            error: 'Email and LinkedIn profile are required'
         });
     }
 
@@ -108,6 +113,7 @@ app.post('/api/checklist', async (req, res) => {
 New checklist download request:
 
 Email: ${email}
+LinkedIn: ${linkedin}
 Role: ${role || 'Not provided'}
 
 ---
@@ -119,6 +125,10 @@ Remember to send them the VC Tech Risk Checklist!
     <tr>
         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
         <td style="padding: 8px; border: 1px solid #ddd;"><a href="mailto:${email}">${email}</a></td>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">LinkedIn</td>
+        <td style="padding: 8px; border: 1px solid #ddd;"><a href="${linkedin}">${linkedin}</a></td>
     </tr>
     <tr>
         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Role</td>

@@ -171,9 +171,24 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending...';
 
+            const linkedinInput = form.querySelector('#contact-linkedin');
+            const linkedinUrl = linkedinInput.value.trim();
+
+            // Validate LinkedIn URL
+            const linkedinPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/;
+            if (!linkedinPattern.test(linkedinUrl)) {
+                linkedinInput.setCustomValidity('Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/yourname)');
+                linkedinInput.reportValidity();
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+            linkedinInput.setCustomValidity('');
+
             const formData = {
                 name: form.querySelector('#contact-name').value,
                 email: form.querySelector('#contact-email').value,
+                linkedin: linkedinUrl,
                 firm: form.querySelector('#contact-firm').value,
                 message: form.querySelector('#contact-message').value
             };
@@ -219,8 +234,23 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
+            const linkedinInput = form.querySelector('#checklist-linkedin');
+            const linkedinUrl = linkedinInput.value.trim();
+
+            // Validate LinkedIn URL
+            const linkedinPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/;
+            if (!linkedinPattern.test(linkedinUrl)) {
+                linkedinInput.setCustomValidity('Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/yourname)');
+                linkedinInput.reportValidity();
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+            linkedinInput.setCustomValidity('');
+
             const formData = {
                 email: form.querySelector('#checklist-email').value,
+                linkedin: linkedinUrl,
                 role: form.querySelector('#checklist-role').value
             };
 
