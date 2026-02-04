@@ -2,10 +2,10 @@
   "name": "dd-site",
   "version": "1.0.0",
   "description": "Technical Due Diligence website with contact form",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node ./server.js",
-    "dev": "node ./server.js"
+    "start": "node ./src/server.js",
+    "dev": "node ./src/server.js"
   },
   "dependencies": {
     "express": "^4.18.2",

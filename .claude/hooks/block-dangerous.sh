@@ -84,7 +84,7 @@ if echo "$COMMAND" | grep -qE '(^|[[:space:]])/[^[:space:]]+'; then
             exit 2
         fi
     done
-done
+fi
 
 # Check for cd to outside project
 if echo "$COMMAND" | grep -qE '^cd[[:space:]]+'; then
@@ -102,7 +102,7 @@ if echo "$COMMAND" | grep -qE '^cd[[:space:]]+'; then
             exit 2
         fi
     fi
-done
+fi
 
 # Allow the command
 exit 0
