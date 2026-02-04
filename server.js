@@ -3,6 +3,11 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 require('dotenv').config();
 
+console.log('Starting server with the following configuration:');
+console.log(`PORT: ${process.env.PORT || 3000}`);
+console.log(`EMAIL_USER: ${process.env.EMAIL_USER ? 'Configured' : 'Not configured'}`);
+console.log(`EMAIL_PASS: ${process.env.EMAIL_PASS ? 'Configured' : 'Not configured'}`);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
