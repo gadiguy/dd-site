@@ -148,8 +148,8 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.warn('\n⚠️  Warning: Email credentials not configured!');
