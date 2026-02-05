@@ -28,13 +28,13 @@ const transporter = nodemailer.createTransport({
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
-    const { name, email, linkedin, firm, message } = req.body;
+    const { name, email, linkedin, message } = req.body;
 
     // Validate required fields
-    if (!name || !email || !linkedin || !message) {
+    if (!name || !email || !linkedin) {
         return res.status(400).json({
             success: false,
-            error: 'Name, email, LinkedIn profile, and message are required'
+            error: 'Name, email, and LinkedIn profile are required'
         });
     }
 
@@ -43,17 +43,16 @@ app.post('/api/contact', async (req, res) => {
         from: process.env.EMAIL_USER,
         to: 'gadiguy@gmail.com',
         replyTo: email,
-        subject: `[DD Site] New inquiry from ${name}${firm ? ` at ${firm}` : ''}`,
+        subject: `[DD Site] New inquiry from ${name}`,
         text: `
 New contact form submission:
 
 Name: ${name}
 Email: ${email}
 LinkedIn: ${linkedin}
-Firm: ${firm || 'Not provided'}
 
 Message:
-${message}
+${message || 'No message provided'}
 
 ---
 Sent from your Technical Due Diligence website
@@ -73,13 +72,9 @@ Sent from your Technical Due Diligence website
         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">LinkedIn</td>
         <td style="padding: 8px; border: 1px solid #ddd;"><a href="${linkedin}">${linkedin}</a></td>
     </tr>
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Firm</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${firm || 'Not provided'}</td>
-    </tr>
 </table>
-<h3>Message:</h3>
-<p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${message.replace(/\n/g, '<br>')}</p>
+${message ? `<h3>Message:</h3>
+<p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${message.replace(/\n/g, '<br>')}</p>` : ''}
 <hr>
 <p style="color: #666; font-size: 12px;">Sent from your Technical Due Diligence website</p>
         `
