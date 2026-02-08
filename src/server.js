@@ -1,6 +1,8 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const path = require('path');
+const { generateContactEmail } = require('./templates/contact');
+const { generateChecklistEmail } = require('./templates/checklist');
 require('dotenv').config();
 
 console.log('Starting server with the following configuration:');
@@ -39,45 +41,15 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Email content
+    const { text, html } = generateContactEmail({ name, email, linkedin, message });
+
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: 'gadiguy@gmail.com',
         replyTo: email,
         subject: `[DD Site] New inquiry from ${name}`,
-        text: `
-New contact form submission:
-
-Name: ${name}
-Email: ${email}
-LinkedIn: ${linkedin}
-
-Message:
-${message || 'No message provided'}
-
----
-Sent from your Technical Due Diligence website
-        `,
-        html: `
-<h2>New contact form submission</h2>
-<table style="border-collapse: collapse; margin-bottom: 20px;">
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${name}</td>
-    </tr>
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
-        <td style="padding: 8px; border: 1px solid #ddd;"><a href="mailto:${email}">${email}</a></td>
-    </tr>
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">LinkedIn</td>
-        <td style="padding: 8px; border: 1px solid #ddd;"><a href="${linkedin}">${linkedin}</a></td>
-    </tr>
-</table>
-${message ? `<h3>Message:</h3>
-<p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${message.replace(/\n/g, '<br>')}</p>` : ''}
-<hr>
-<p style="color: #666; font-size: 12px;">Sent from your Technical Due Diligence website</p>
-        `
+        text,
+        html
     };
 
     try {
@@ -105,40 +77,14 @@ app.post('/api/checklist', async (req, res) => {
     }
 
     // Notify you of new checklist request
+    const { text, html } = generateChecklistEmail({ email, linkedin, role });
+
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: 'gadiguy@gmail.com',
         subject: `[DD Site] New checklist download request`,
-        text: `
-New checklist download request:
-
-Email: ${email}
-LinkedIn: ${linkedin}
-Role: ${role || 'Not provided'}
-
----
-Remember to send them the VC Tech Risk Checklist!
-        `,
-        html: `
-<h2>New checklist download request</h2>
-<table style="border-collapse: collapse; margin-bottom: 20px;">
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
-        <td style="padding: 8px; border: 1px solid #ddd;"><a href="mailto:${email}">${email}</a></td>
-    </tr>
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">LinkedIn</td>
-        <td style="padding: 8px; border: 1px solid #ddd;"><a href="${linkedin}">${linkedin}</a></td>
-    </tr>
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Role</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${role || 'Not provided'}</td>
-    </tr>
-</table>
-<p style="background: #fffde7; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;">
-    <strong>Action needed:</strong> Send them the VC Tech Risk Checklist!
-</p>
-        `
+        text,
+        html
     };
 
     try {
